@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot Assistant</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(45deg, #141E30, #243B55);
+      color: #fff;
+    }
+
+    .delete-icon {
+      cursor: pointer;
+      font-size: 20px;
+      color: #fff;
+      background: none;
+      border: none;
+      outline: none;
+    }
+
+    .container {
+      width: 400px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.75);
+      padding: 15px;
+    }
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-header {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #444;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: #555 transparent;
+    }
+
+    .chat-message {
+      padding: 12px 15px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      max-width: 80%;
+      word-wrap: break-word;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    .chat-message.user {
+      background-color: #1E88E5;
+      color: white;
+      align-self: flex-end;
+      border-bottom-left-radius: 0;
+    }
+
+    .chat-message.bot {
+      background-color: #4CAF50;
+      color: white;
+      align-self: flex-start;
+      border-bottom-right-radius: 0;
+    }
+
+    .input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #444;
+      gap: 8px;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      background-color: #333;
+      color: white;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    #chat-input:focus {
+      background-color: #444;
+    }
+
+    #chat-submit-btn {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #chat-submit-btn:hover {
+      background-color: #1976D2;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="chat-box">
+      <div class="chat-header">💬 AI Chatbot Assistant</div>
+      <div id="chat-container" class="chat-container"></div>
+      <div class="input-container">
+        <input type="text" id="chat-input" placeholder="Type your message..." />
+        <button class="delete-icon" id="delete-icon">❌</button>
+        <button id="chat-submit-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class ChatbotClient {
+      constructor() {
+        this.chatContainer = document.getElementById('chat-container');
+        this.chatInput = document.getElementById('chat-input');
+        this.chatSubmitBtn = document.getElementById('chat-submit-btn');
+        this.deleteIcon = document.getElementById('delete-icon');
+        this.apiUrl = "http://localhost:7860";
+        this.botPid = null;
+        this.setupEventListeners();
+        this.initializeBot();
+      }
+
+      setupEventListeners() {
+        this.chatSubmitBtn.addEventListener('click', () => this.handleChatSubmit());
+        this.chatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            this.handleChatSubmit();
+          }
+        });
+
+        this.deleteIcon.addEventListener('click', () => {
+          this.chatContainer.innerHTML = '';
+          this.chatInput.value = '';
+        });
+      }
+
+      async initializeBot() {
+        try {
+          const response = await fetch(`${this.apiUrl}/connect`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          const data = await response.json();
+          if (data.room_url) {
+            this.botPid = data.room_url.split('/').pop();
+            this.addMessageToChat("Bot is ready. Start chatting!", 'bot');
+          } else {
+            this.addMessageToChat("Failed to initialize bot.", 'bot');
+          }
+        } catch (error) {
+          this.addMessageToChat("Error connecting to bot.", 'bot');
+        }
+      }
+
+      async handleChatSubmit() {
+        const userMessage = this.chatInput.value.trim();
+        if (userMessage === '') return;
+
+        this.addMessageToChat(userMessage, 'user');
+        this.addMessageToChat('Thinking...', 'bot');
+
+        try {
+          const response = await fetch(`${this.apiUrl}/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+          });
+
+          const data = await response.json();
+          this.updateBotMessage(data.response);
+        } catch (error) {
+          this.updateBotMessage('Error: Could not get a response from the bot.');
+        }
+
+        this.chatInput.value = '';
+      }
+
+      addMessageToChat(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', sender);
+        messageElement.textContent = message;
+        this.chatContainer.appendChild(messageElement);
+        this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+      }
+
+      updateBotMessage(message) {
+        const lastBotMessage = this.chatContainer.querySelector('.chat-message.bot:last-child');
+        if (lastBotMessage) {
+          lastBotMessage.textContent = message;
+        } else {
+          this.addMessageToChat(message, 'bot');
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      new ChatbotClient();
+    });
+  </script>
+</body>
+
+</html>
