@@ -1,37 +1,61 @@
-# Project Name
+# Weather Chatbot
 
 ## Description
-A brief description of your project, what it does, and its main features.
+The Weather Chatbot provides users with real-time weather updates and forecasts through an interactive chatbot interface. It can be integrated with various messaging platforms and utilizes APIs to fetch accurate weather data.
+
+
+<video width="640" height="360" controls>
+  <source src="example-video.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/your-username/repository-name.git
-   ```
-2. Navigate to the project directory:
-   ```sh
-   cd repository-name
-   ```
-3. Install dependencies (if applicable):
-   ```sh
-   npm install  # For Node.js projects
-   pip install -r requirements.txt  # For Python projects
-   ```
+### Clone the Repository:
+```sh
+git clone https://github.com/Aurjay/weather-chatbot.git
+```
+### Navigate to the Project Directory:
+```sh
+cd weather-chatbot
+```
+### Install Dependencies:
+For Node.js projects:
+```sh
+npm install
+```
+For Python projects:
+```sh
+pip install -r requirements.txt
+```
 
 ## Usage
-Run the application with:
+To run the application:
+
+For Node.js projects:
 ```sh
-npm start  # For Node.js projects
-python main.py  # For Python projects
+npm start
+```
+For Python projects:
+```sh
+python main.py
 ```
 
 ## Contributing
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature-branch`)
-5. Open a Pull Request
+1. Fork the repository.
+2. Create a new branch:
+   ```sh
+   git checkout -b feature-branch
+   ```
+3. Commit your changes:
+   ```sh
+   git commit -m "Add new feature"
+   ```
+4. Push to the branch:
+   ```sh
+   git push origin feature-branch
+   ```
+5. Open a Pull Request.
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
 
