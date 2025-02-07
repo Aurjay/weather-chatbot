@@ -3,10 +3,7 @@
 ## Description
 The Weather Chatbot provides users with real-time weather updates and forecasts through an interactive chatbot interface. It can be integrated with various messaging platforms and utilizes APIs to fetch accurate weather data.
 
-
-<video width="640" height="360" controls>
-  <source src="Aufnahme #3.mp4" type="video/mp4">
-</video>
+[Aufnahme #3.mp4](Aufnahme%20%233.mp4)
 
 ## Installation
 ### Clone the Repository:
